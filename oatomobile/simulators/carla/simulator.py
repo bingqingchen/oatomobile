@@ -1547,6 +1547,7 @@ class GoalSensor(simulator.Sensor):
     ## Find the closest index as the correct location 
     distance = np.linalg.norm(self._goal-current_location, axis = 1)
     idx = np.argmin(distance)
+    
     print(idx, current_location)
     idx = max(idx-1, 0)
     goals_local = cutil.world2local(
