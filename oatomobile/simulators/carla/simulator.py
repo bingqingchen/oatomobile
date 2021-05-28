@@ -1549,7 +1549,6 @@ class GoalSensor(simulator.Sensor):
     idx = np.argmin(distance)
     
     print(idx, current_location)
-    idx = max(idx-1, 0)
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
