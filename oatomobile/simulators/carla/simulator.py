@@ -1548,13 +1548,13 @@ class GoalSensor(simulator.Sensor):
     distance = np.linalg.norm(self._goal-current_location, axis = 1)
     idx = np.argmin(distance)
     print(idx, current_location)
-    
+    idx = max(idx-1, 0)
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
-        world_locations=self._goal[max(0, idx-1):idx+self._num_goals-1],
+        world_locations=self._goal[idx:idx+self._num_goals],
     )
-    print(goals_local)
+    print("goals_local", goals_local)
     # Increments counter, bookkeping.
     self._num_steps += 1
     if idx > 0.1 * len(self._goal):
