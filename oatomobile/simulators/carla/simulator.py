@@ -1459,6 +1459,7 @@ class GoalSensor(simulator.Sensor):
     self._hero = hero
 
     # Parses hyperparameters.
+    self._max_goals = 1000
     self._num_goals = self.config["num_goals"]
     self._sampling_radius = self.config["sampling_radius"]
     self._replan_every_steps = self.config["replan_every_steps"]
@@ -1466,6 +1467,43 @@ class GoalSensor(simulator.Sensor):
     # Stored goal.
     self._goal = None
     self._num_steps = 0
+
+    ## Develop a global goal from the beginning
+    carla_world = self._hero.get_world()
+    carla_map = carla_world.get_map()
+
+    # Fetches start and end waypoints for the A* planner.
+    hero_transform = self._hero.get_transform()
+    origin = hero_transform.location
+    start_waypoint = carla_map.get_waypoint(origin)
+    end_waypoint = carla_map.get_waypoint(self.destination.location)
+    destination_location = cutil.carla_xyz_to_ndarray(self.destination.location)
+ 
+    # Caclulates global plan.
+    waypoints, _, _ = cutil.global_plan(
+        world=carla_world,
+        origin=start_waypoint.transform.location,
+        destination=end_waypoint.transform.location,
+    )
+
+    # Samples goals.
+    '''
+    goals_world = [waypoints[0]]
+    for _ in range(self._max_goals):
+      goals_world.append(goals_world[-1].next(self._sampling_radius)[0])
+      current_waypoint = cutil.carla_xyz_to_ndarray(goals_world[-1].transform.location)
+      distance_to_go = np.linalg.norm(current_waypoint - destination_location)
+      print(current_waypoint, distance_to_go)
+      if distance_to_go <= self._sampling_radius:
+        break
+    '''
+    # Converts goals to `NumPy` arrays.
+    self._goal = np.asarray([
+        cutil.carla_xyz_to_ndarray(waypoint.transform.location)
+        for waypoint in waypoints#goals_world
+    ])
+    print("Number of global waypoints = ", len(self._goal))
+    np.save('waypoints.npy', self._goal)
 
   def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
     """Returns the universal unique identifier of the sensor."""
@@ -1488,10 +1526,8 @@ class GoalSensor(simulator.Sensor):
   def get_observation(self, frame: int,
                       **kwargs) -> Mapping[str, Mapping[str, np.ndarray]]:
     """Finds the data point that matches the current `frame` id.
-
     Args:
       frame: The synchronous simulation time step ID.
-
     Returns:
       The ego-locations of the goal(s).
     """
@@ -1500,46 +1536,23 @@ class GoalSensor(simulator.Sensor):
     # Fetches hero measurements for the coordinate transformations.
     hero_transform = self._hero.get_transform()
 
-    if self._goal is None or self._num_steps % self._replan_every_steps == 0:
-      # References to CARLA objects.
-      carla_world = self._hero.get_world()
-      carla_map = carla_world.get_map()
-
-      # Fetches start and end waypoints for the A* planner.
-      origin = hero_transform.location
-      start_waypoint = carla_map.get_waypoint(origin)
-      end_waypoint = carla_map.get_waypoint(self.destination.location)
-
-      # Caclulates global plan.
-      waypoints, _, _ = cutil.global_plan(
-          world=carla_world,
-          origin=start_waypoint.transform.location,
-          destination=end_waypoint.transform.location,
-      )
-
-      # Samples goals.
-      goals_world = [waypoints[0]]
-      for _ in range(self._num_goals - 1):
-        goals_world.append(goals_world[-1].next(self._sampling_radius)[0])
-
-      # Converts goals to `NumPy` arrays.
-      self._goal = np.asarray([
-          cutil.carla_xyz_to_ndarray(waypoint.transform.location)
-          for waypoint in goals_world
-      ])
-
+    #if self._goal is None or self._num_steps % self._replan_every_steps == 0:
+      
     # Converts goals to ego coordinates.
     current_location = cutil.carla_xyz_to_ndarray(hero_transform.location)
     current_rotation = cutil.carla_rotation_to_ndarray(hero_transform.rotation)
+    
+    ## Find the closest index as the correct location 
+    distance = np.linalg.norm(self._goal-current_location, axis = 1)
+    idx = np.argmin(distance)
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
-        world_locations=self._goal,
+        world_locations=self._goal[idx:idx+self._num_goals],
     )
 
     # Increments counter, bookkeping.
     self._num_steps += 1
-
     return goals_local.astype(np.float32)
 
   def close(self) -> None:
