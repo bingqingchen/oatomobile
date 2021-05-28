@@ -1557,7 +1557,7 @@ class GoalSensor(simulator.Sensor):
 
     # Increments counter, bookkeping.
     self._num_steps += 1
-    if idx > 0.9 * len(self._goal):
+    if idx > 0.1 * len(self._goal):
       self._get_goal()
     return goals_local.astype(np.float32)
 
