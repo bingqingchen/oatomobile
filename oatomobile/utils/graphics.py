@@ -242,6 +242,7 @@ def make_dashboard(display: pygame.Surface, font: pygame.font.Font,
         array=observations.get("front_camera_rgb"),
         swapaxes=True,
     )
+    ob_front_camera_rgb_rgb = pygame.transform.scale(ob_front_camera_rgb_rgb, (320, 180))
     display.blit(ob_front_camera_rgb_rgb, (ada_width, 0))
     ada_width = ada_width + ob_front_camera_rgb_rgb.get_width()
 

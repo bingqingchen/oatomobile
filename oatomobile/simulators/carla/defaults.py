@@ -346,6 +346,7 @@ CARLA_SENSORS = (
     "goal",
     "front_camera_rgb",
     #"front_camera_segmented",
+    "bird_view_camera_rgb",
     "bird_view_camera_cityscapes",
     "control",
     "location",
