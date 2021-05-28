@@ -345,7 +345,8 @@ GAME_STATE_CONFIG = {
 CARLA_SENSORS = (
     "goal",
     "front_camera_rgb",
-    "front_camera_segmented",
+    #"front_camera_segmented",
+    "bird_view_camera_cityscapes",
     "control",
     "location",
     "rotation",
