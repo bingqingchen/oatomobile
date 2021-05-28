@@ -1554,7 +1554,7 @@ class GoalSensor(simulator.Sensor):
         current_rotation=current_rotation,
         world_locations=self._goal[idx-1:idx+self._num_goals-1],
     )
-
+    print(goals_local)
     # Increments counter, bookkeping.
     self._num_steps += 1
     if idx > 0.1 * len(self._goal):
