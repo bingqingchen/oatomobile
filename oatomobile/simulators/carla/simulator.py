@@ -1552,7 +1552,7 @@ class GoalSensor(simulator.Sensor):
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
-        world_locations=self._goal[idx:idx+self._num_goals],
+        world_locations=self._goal[idx-1:idx+self._num_goals-1],
     )
 
     # Increments counter, bookkeping.
