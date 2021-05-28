@@ -1533,7 +1533,7 @@ class GoalSensor(simulator.Sensor):
       The ego-locations of the goal(s).
     """
     del frame  # Unused arg
-    if self._num_steps==0:
+    if (self._goal is None) | (self._num_steps % self._replan_every_steps ==0):
       self._get_goal()
     # Fetches hero measurements for the coordinate transformations.
     hero_transform = self._hero.get_transform()
@@ -1558,8 +1558,6 @@ class GoalSensor(simulator.Sensor):
     #print("goals_local", goals_local)
     # Increments counter, bookkeping.
     self._num_steps += 1
-    if idx > 0.1 * len(self._goal):
-      self._get_goal()
     return goals_local.astype(np.float32)
 
   def close(self) -> None:
