@@ -1468,6 +1468,7 @@ class GoalSensor(simulator.Sensor):
     self._goal = None
     self._num_steps = 0
 
+  def _get_goal(self):
     ## Develop a global goal from the beginning
     carla_world = self._hero.get_world()
     carla_map = carla_world.get_map()
@@ -1478,7 +1479,7 @@ class GoalSensor(simulator.Sensor):
     start_waypoint = carla_map.get_waypoint(origin)
     end_waypoint = carla_map.get_waypoint(self.destination.location)
     destination_location = cutil.carla_xyz_to_ndarray(self.destination.location)
- 
+
     # Caclulates global plan.
     waypoints, _, _ = cutil.global_plan(
         world=carla_world,
@@ -1532,7 +1533,8 @@ class GoalSensor(simulator.Sensor):
       The ego-locations of the goal(s).
     """
     del frame  # Unused arg
-
+    if self._num_steps==0:
+      self._get_goal()
     # Fetches hero measurements for the coordinate transformations.
     hero_transform = self._hero.get_transform()
 
@@ -1546,6 +1548,7 @@ class GoalSensor(simulator.Sensor):
     distance = np.linalg.norm(self._goal-current_location, axis = 1)
     idx = np.argmin(distance)
     print(idx, current_location)
+    
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
@@ -1554,6 +1557,8 @@ class GoalSensor(simulator.Sensor):
 
     # Increments counter, bookkeping.
     self._num_steps += 1
+    if idx > 0.9 * len(self._goal):
+      self._get_goal()
     return goals_local.astype(np.float32)
 
   def close(self) -> None:
