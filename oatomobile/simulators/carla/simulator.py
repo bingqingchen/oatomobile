@@ -1500,7 +1500,7 @@ class GoalSensor(simulator.Sensor):
     '''
     
     ## If not enough waypoints to destination
-    if len(self.waypoints) < self._num_goals:
+    if len(waypoints) < self._num_goals:
       # Samples more goals.
       for _ in range(self._num_goals - len(self.waypoints) + 5):
         waypoints.append(waypoints[-1].next(self._sampling_radius)[0])
