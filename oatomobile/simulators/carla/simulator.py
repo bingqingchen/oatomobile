@@ -1489,7 +1489,7 @@ class GoalSensor(simulator.Sensor):
 
     # Samples goals.
     '''
-    goals_world = [waypoints[0]]
+    goals_world = [waypoints[0]]oa
     for _ in range(self._max_goals):
       goals_world.append(goals_world[-1].next(self._sampling_radius)[0])
       current_waypoint = cutil.carla_xyz_to_ndarray(goals_world[-1].transform.location)
@@ -1554,7 +1554,7 @@ class GoalSensor(simulator.Sensor):
     distance = np.linalg.norm(self._goal-current_location, axis = 1)
     idx = np.argmin(distance)
     ## Make sure the idx is before the start
-    idx = max(0, idx-1)
+    #idx = max(0, idx-1)
     print(idx, current_location)
     goals_local = cutil.world2local(
         current_location=current_location,
