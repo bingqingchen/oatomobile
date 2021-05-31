@@ -1498,12 +1498,13 @@ class GoalSensor(simulator.Sensor):
       if distance_to_go <= self._sampling_radius:
         break
     '''
-    '''
-    # Samples goals.
-    goals_world = [waypoints[0]]
-    for _ in range(self._num_goals - 1):
-      goals_world.append(goals_world[-1].next(self._sampling_radius)[0])
-    '''
+    
+    ## If not enough waypoints to destination
+    if len(self.waypoints) < self._num_goals:
+      # Samples more goals.
+      for _ in range(self._num_goals - len(self.waypoints) + 5):
+        waypoints.append(waypoints[-1].next(self._sampling_radius)[0])
+      
     # Converts goals to `NumPy` arrays.
     self._goal = np.asarray([
         cutil.carla_xyz_to_ndarray(waypoint.transform.location)
@@ -1556,11 +1557,13 @@ class GoalSensor(simulator.Sensor):
     ## Make sure the idx is before the start
     #idx = max(0, idx-1)
     print(idx, current_location)
+    
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
         world_locations=self._goal[idx:idx+self._num_goals],
     )
+
     #print("goals_local", goals_local)
     # Increments counter, bookkeping.
     self._num_steps += 1
