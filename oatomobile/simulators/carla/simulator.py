@@ -1506,7 +1506,7 @@ class GoalSensor(simulator.Sensor):
     # Converts goals to `NumPy` arrays.
     self._goal = np.asarray([
         cutil.carla_xyz_to_ndarray(waypoint.transform.location)
-        for waypoint in waypoints#goals_world
+        for waypoint in goals_world # waypoints
     ])
     print("Number of global waypoints = ", len(self._goal))
     np.save('waypoints.npy', self._goal)
