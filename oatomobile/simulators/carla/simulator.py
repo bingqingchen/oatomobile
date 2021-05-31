@@ -1489,7 +1489,7 @@ class GoalSensor(simulator.Sensor):
 
     # Samples goals.
     '''
-    goals_world = [waypoints[0]]oa
+    goals_world = [waypoints[0]]
     for _ in range(self._max_goals):
       goals_world.append(goals_world[-1].next(self._sampling_radius)[0])
       current_waypoint = cutil.carla_xyz_to_ndarray(goals_world[-1].transform.location)
@@ -1498,7 +1498,7 @@ class GoalSensor(simulator.Sensor):
       if distance_to_go <= self._sampling_radius:
         break
     '''
-    
+    waypoints = [waypoint for waypoint in waypoints]
     ## If not enough waypoints to destination
     if len(waypoints) < self._num_goals:
       # Samples more goals.
