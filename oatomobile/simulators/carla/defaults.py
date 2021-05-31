@@ -304,7 +304,7 @@ LIDAR_SENSOR_CONFIG = {
 
 # The goal sensor configuration.
 GOAL_SENSOR_CONFIG = {
-    "num_goals": 10,
+    "num_goals": 20,
     "sampling_radius": 2.0,
     "replan_every_steps": 10,
 }

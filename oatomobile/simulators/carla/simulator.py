@@ -1498,15 +1498,16 @@ class GoalSensor(simulator.Sensor):
       if distance_to_go <= self._sampling_radius:
         break
     '''
+    '''
     # Samples goals.
     goals_world = [waypoints[0]]
     for _ in range(self._num_goals - 1):
       goals_world.append(goals_world[-1].next(self._sampling_radius)[0])
-
+    '''
     # Converts goals to `NumPy` arrays.
     self._goal = np.asarray([
         cutil.carla_xyz_to_ndarray(waypoint.transform.location)
-        for waypoint in goals_world # waypoints
+        for waypoint in waypoints #goals_world
     ])
     print("Number of global waypoints = ", len(self._goal))
     np.save('waypoints.npy', self._goal)
