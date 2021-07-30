@@ -94,7 +94,7 @@ We have tested OATomobile on Python 3.5.
 
 3. To reinstall the library (e.g., after updates to the core API):
     ```
-    pip install --upgrade --no-deps --force-reinstall -e git+https://github.com/weirayao/oatomobile.git#egg=oatomobile
+    pip install --upgrade --no-deps --force-reinstall -e git+https://github.com/bingqingchen/oatomobile.git#egg=oatomobile
     ```
 
 4.  To install dependencies for our [PyTorch]- or [TensorFlow]-based agents:
