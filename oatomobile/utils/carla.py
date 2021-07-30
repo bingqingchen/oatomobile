@@ -340,7 +340,7 @@ def spawn_pedestrians(
       # player_rotation = carla.Rotation(0,pedestrian_heading,0)
       # player_control.direction = player_rotation.get_forward_vector()
       if actor is not None:
-        actor.apply_control(player_control)
+        # actor.apply_control(player_control)
         actors.append(actor)
   logging.debug("Spawned {} pedestrians".format(len(actors)))
   return actors
