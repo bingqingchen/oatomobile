@@ -333,11 +333,11 @@ def spawn_pedestrians(
         continue
       # Attempt to spawn vehicle in random location.
       actor = world.try_spawn_actor(pedestrian_bp, spawn_point)
-      player_control = carla.WalkerControl()
-      player_control.speed = 3
-      pedestrian_heading=90
-      player_rotation = carla.Rotation(0,pedestrian_heading,0)
-      player_control.direction = player_rotation.get_forward_vector()
+      # player_control = carla.WalkerControl()
+      # player_control.speed = 3
+      # pedestrian_heading=90
+      # player_rotation = carla.Rotation(0,pedestrian_heading,0)
+      # player_control.direction = player_rotation.get_forward_vector()
       if actor is not None:
         actor.apply_control(player_control)
         actors.append(actor)
