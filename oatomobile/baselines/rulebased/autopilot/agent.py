@@ -119,7 +119,7 @@ class AutopilotAgent(oatomobile.Agent):
 
   def _run_step(
       self,
-      debug: bool = True,
+      debug: bool = False,
   ) -> carla.VehicleControl:  # pylint: disable=no-member
     """Executes one step of navigation."""
 
@@ -136,7 +136,7 @@ class AutopilotAgent(oatomobile.Agent):
     vehicle_state, vehicle = self._is_vehicle_hazard(vehicle_list)
     if vehicle_state:
       if debug:
-        logging.warning('!!! VEHICLE BLOCKING AHEAD [{}])'.format(vehicle.id))
+        logging.debug('!!! VEHICLE BLOCKING AHEAD [{}])'.format(vehicle.id))
 
       hazard_detected = True
 
@@ -144,7 +144,7 @@ class AutopilotAgent(oatomobile.Agent):
     light_state, traffic_light = self._is_light_red(lights_list)
     if light_state:
       if debug:
-        logging.warning('=== RED LIGHT AHEAD [{}])'.format(traffic_light.id))
+        logging.debug('=== RED LIGHT AHEAD [{}])'.format(traffic_light.id))
 
       hazard_detected = True
 

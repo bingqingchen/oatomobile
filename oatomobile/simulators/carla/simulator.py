@@ -1487,7 +1487,7 @@ class GoalSensor(simulator.Sensor):
         destination=end_waypoint.transform.location,
     )
 
-    # Samples goals.
+    ################# My Modifications #####################
     '''
     goals_world = [waypoints[0]]
     for _ in range(self._max_goals):
@@ -1504,7 +1504,7 @@ class GoalSensor(simulator.Sensor):
       # Samples more goals.
       for _ in range(self._num_goals - len(waypoints) + 5):
         waypoints.append(waypoints[-1].next(self._sampling_radius)[0])
-      
+    ##########################################################
     # Converts goals to `NumPy` arrays.
     self._goal = np.asarray([
         cutil.carla_xyz_to_ndarray(waypoint.transform.location)
@@ -1544,24 +1544,24 @@ class GoalSensor(simulator.Sensor):
       self._get_goal()
     # Fetches hero measurements for the coordinate transformations.
     hero_transform = self._hero.get_transform()
-
-    #if self._goal is None or self._num_steps % self._replan_every_steps == 0:
       
     # Converts goals to ego coordinates.
     current_location = cutil.carla_xyz_to_ndarray(hero_transform.location)
     current_rotation = cutil.carla_rotation_to_ndarray(hero_transform.rotation)
     
+    ################### My Addition ####################
     ## Find the closest index as the correct location 
     distance = np.linalg.norm(self._goal-current_location, axis = 1)
     idx = np.argmin(distance)
     ## Make sure the idx is before the start
     #idx = max(0, idx-1)
     print(idx, current_location)
+    #####################################################
     
     goals_local = cutil.world2local(
         current_location=current_location,
         current_rotation=current_rotation,
-        world_locations=self._goal[idx:idx+self._num_goals],
+        world_locations=self._goal[idx:idx+self._num_goals], ## Modified here
     )
 
     #print("goals_local", goals_local)
