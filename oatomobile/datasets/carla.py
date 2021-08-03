@@ -321,7 +321,7 @@ class CARLADataset(Dataset):
     env = TerminateOnCollisionWrapper(env)
     # Wraps the environment in an episode handler to store <observation, action> pairs.
     if debug:
-      env = MonitorWrapper(env, output_fname="/home/wyao1/debug.gif")
+      env = MonitorWrapper(env, output_fname="/home/bingqinc/debug.gif")
     else:
       env = SaveToDiskWrapper(env=env, output_dir=output_dir)
     # Caps environment's duration.
