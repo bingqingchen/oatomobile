@@ -238,9 +238,8 @@ class CARLADataset(Dataset):
                                              self.config["NumberOfPedestrians"][1])
 
       weather = random.choice(self.config["WEATHERS"])
-      origin, destination = random.choice(self.config["POSITIONS"])
-      if random.random() < 0.5:
-        origin, destination = destination, origin
+      # origin, destination = random.choice(self.config["POSITIONS"])
+      origin, destination = None, None
       print("Number of Vehicles: %d\nNumber of Pedestrians: %d"%(number_of_vehicles, number_of_pedestrians))
       print("Weather: %s"%weather)
       # print("Origin index: %d\nDestination index: %d"%(origin,destination))
@@ -257,7 +256,7 @@ class CARLADataset(Dataset):
                                        render=False,
                                        debug=debug)
       # Wait 5s so the game can be closed completely
-      time.sleep(5)
+      time.sleep(0.5)
 
   @staticmethod
   def collect_one_episode(
@@ -300,19 +299,19 @@ class CARLADataset(Dataset):
       sensors: The list of recorded sensors.
       render: If True it spawn the `PyGame` display.
     """
-    from oatomobile.baselines.rulebased.walker.agent import AutopilotAgent
+    from oatomobile.baselines.rulebased.autopilot.agent import AutopilotAgent
     from oatomobile.core.loop import EnvironmentLoop
     from oatomobile.core.rl import FiniteHorizonWrapper
     from oatomobile.core.rl import SaveToDiskWrapper
     from oatomobile.core.rl import MonitorWrapper
-    from oatomobile.envs.carla import CARLANavEnv
+    from oatomobile.envs.carla import CARLAEnv
     from oatomobile.envs.carla import TerminateOnCollisionWrapper
 
     # Initializes a CARLA environment.
-    env = CARLANavEnv(
+    env = CARLAEnv(
         town=town,
         weather=weather,
-        origin=spawn_point,
+        spawn_point=spawn_point,
         destination=destination,
         sensors=sensors,
         num_vehicles=num_vehicles,
