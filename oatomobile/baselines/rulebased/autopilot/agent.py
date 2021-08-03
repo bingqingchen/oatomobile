@@ -16,6 +16,8 @@
 
 import math
 import random
+import numpy as np
+
 from typing import Any
 from typing import Optional
 from typing import Tuple
@@ -181,7 +183,17 @@ class AutopilotAgent(oatomobile.Agent):
     )
     # Mutate the local planner's global plan.
     self._local_planner.set_global_plan(list(zip(waypoints, roadoptions)))
-
+    
+    ############### DEBUG ####################
+    # Converts goals to `NumPy` arrays.
+    self._goal = np.asarray([
+        cutil.carla_xyz_to_ndarray(waypoint.transform.location)
+        for waypoint in waypoints #goals_world
+    ])
+    #print("Number of global waypoints = ", len(self._goal))
+    np.save('waypoints_agent.npy', self._goal)
+    ###########################################
+    
   def _is_vehicle_hazard(
       self,
       vehicle_list,

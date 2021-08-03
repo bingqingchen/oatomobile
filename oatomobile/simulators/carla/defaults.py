@@ -306,7 +306,7 @@ LIDAR_SENSOR_CONFIG = {
 GOAL_SENSOR_CONFIG = {
     "num_goals": 20,
     "sampling_radius": 1.0,
-    "replan_every_steps": 10,
+    "replan_every_steps": 100000,
 }
 
 # The game state configuration.
