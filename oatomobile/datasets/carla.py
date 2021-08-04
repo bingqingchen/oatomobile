@@ -238,8 +238,8 @@ class CARLADataset(Dataset):
                                              self.config["NumberOfPedestrians"][1])
 
       weather = random.choice(self.config["WEATHERS"])
-      # origin, destination = random.choice(self.config["POSITIONS"])
-      origin, destination = None, None
+      origin, destination = random.choice(self.config["POSITIONS"])
+      #origin, destination = 19, 66 #None, None
       print("Number of Vehicles: %d\nNumber of Pedestrians: %d"%(number_of_vehicles, number_of_pedestrians))
       print("Weather: %s"%weather)
       # print("Origin index: %d\nDestination index: %d"%(origin,destination))
