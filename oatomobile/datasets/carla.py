@@ -239,10 +239,12 @@ class CARLADataset(Dataset):
 
       weather = random.choice(self.config["WEATHERS"])
       origin, destination = random.choice(self.config["POSITIONS"])
+      if random.random() < 0.5:
+        origin, destination = destination, origin
       #origin, destination = 19, 66 #None, None
       print("Number of Vehicles: %d\nNumber of Pedestrians: %d"%(number_of_vehicles, number_of_pedestrians))
       print("Weather: %s"%weather)
-      # print("Origin index: %d\nDestination index: %d"%(origin,destination))
+      print("Origin index: %d\nDestination index: %d"%(origin,destination))
       data_dir = os.path.join(output_dir, weather)
       CARLADataset.collect_one_episode(town=town, 
                                        weather=weather, 
@@ -321,7 +323,7 @@ class CARLADataset(Dataset):
     env = TerminateOnCollisionWrapper(env)
     # Wraps the environment in an episode handler to store <observation, action> pairs.
     if debug:
-      env = MonitorWrapper(env, output_fname="/home/bingqinc/debug.gif")
+      env = MonitorWrapper(env, output_fname="/data/datasets//data/datasets/carla/debug.gif")
     else:
       env = SaveToDiskWrapper(env=env, output_dir=output_dir)
     # Caps environment's duration.

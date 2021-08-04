@@ -49,7 +49,7 @@ class AutopilotAgent(oatomobile.Agent):
   def __init__(self,
                environment: oatomobile.envs.CARLAEnv,
                *,
-               proximity_tlight_threshold: float = 5.0,
+               proximity_tlight_threshold: float = 10.0,
                proximity_vehicle_threshold: float = 10.0,
                noise: float = 0.1) -> None:
     """Constructs an autopilot agent.
