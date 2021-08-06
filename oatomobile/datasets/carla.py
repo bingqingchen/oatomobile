@@ -59,12 +59,14 @@ def map_waypoints_to_grid(waypoints, grid_res = 0.5, grid_size = (40,40)):
     # Horizontal filling
     x_idx = np.round(x / grid_res + 0.5*grid_size[0]).astype("int") 
     y_idx = (np.round(ynew / grid_res)).astype("int")
+    x_idx = np.clip(x_idx, a_min=0, a_max=grid_size[0]-1)
     y_idx = np.clip(y_idx, a_min=0, a_max=grid_size[1]-1) 
     data = np.ones_like(x_idx)
     grid_hfill = csr_matrix((data, (y_idx, x_idx)), shape = grid_size)
     # Vertical filling
     x_idx = np.round(xnew / grid_res + 0.5*grid_size[0]).astype("int") 
     y_idx = (np.round(y / grid_res)).astype("int") 
+    x_idx = np.clip(x_idx, a_min=0, a_max=grid_size[0]-1) 
     y_idx = np.clip(y_idx, a_min=0, a_max=grid_size[1]-1) 
     data = np.ones_like(x_idx)
     grid_vfill = csr_matrix((data, (y_idx, x_idx)), shape = grid_size) 
@@ -258,7 +260,7 @@ class CARLADataset(Dataset):
                                        render=False,
                                        debug=debug)
       # Wait 5s so the game can be closed completely
-      time.sleep(0.5)
+      time.sleep(15)
 
   @staticmethod
   def collect_one_episode(
@@ -344,7 +346,7 @@ class CARLADataset(Dataset):
       past_length: int = 20,
       num_frame_skips: int = 5,
       grid_res: float = 0.5,
-      grid_size: Tuple = (79,79)
+      grid_size: Tuple = (39,39)
   ) -> None:
     """Converts a raw dataset to demonstrations for imitation learning.
 
@@ -462,12 +464,12 @@ class CARLADataset(Dataset):
           # Norm of the vector (x_T, y_T).
           norm = np.linalg.norm([x_T, y_T])
           # Angle of vector (0, 0) -> (x_T, y_T).
-          theta = np.degrees(np.arccos(x_T / (norm + 1e-3)))
+          theta = np.degrees(np.arctan(y_T / (x_T + 1e-3)))
           if norm < 3:  # STOP
             mode = 1
-          elif theta > 15:  # LEFT
+          elif theta > 15:  # RIGHT
             mode = 2
-          elif theta <= -15:  # RIGHT
+          elif theta <= -15:  # LEFT
             mode = 3
           else:  # FORWARD
             mode = 0
