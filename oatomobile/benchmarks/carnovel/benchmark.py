@@ -67,7 +67,7 @@ class CARNOVEL(Benchmark):
     Returns:
       A task from the benchmark with `task_id`.
     """
-    env = super(CARNOVEL, self).load(task_id, max_episode_steps=1500, weather='ClearNoon', **kwargs)
+    env = super(CARNOVEL, self).load(task_id, max_episode_steps=2500, weather='ClearNoon', **kwargs)
 
     # Terminate on collision.
     env = TerminateOnCollisionWrapper(env)
