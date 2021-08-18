@@ -1,0 +1,8 @@
+{
+  "town": "Town01",
+  "origin": 79,
+  "destination": 227,
+  "num_vehicles": 15,
+  "num_pedestrians": 50,
+  "weather": "ClearNoon"
+}

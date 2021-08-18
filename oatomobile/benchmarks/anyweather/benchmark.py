@@ -52,11 +52,11 @@ for _config in _configs:
         _TASKS[_task_id] = json.load(_dict)
 
 
-class NoCrash(Benchmark):
-    """The NoCrash benchmark."""
+class AnyWeather(Benchmark):
+    """The AnyWeather benchmark."""
 
     def load(self, task_id: Text, **kwargs) -> CARLANavEnv:
-        """Loads a NoCrash task.
+        """Loads a AnyWeather task.
 
         Args:
           task_id: The unique identifier of a task.
@@ -66,10 +66,10 @@ class NoCrash(Benchmark):
           A task from the benchmark with `task_id`.
         """
         # TODO(filangel): figure out the correct horizon.
-        env = super(NoCrash, self).load(task_id, max_episode_steps=1500, **kwargs)
+        env = super(AnyWeather, self).load(task_id, max_episode_steps=1500, **kwargs)
 
         # Terminate on collision.
-        env = TerminateOnCollisionWrapper(env)
+        # env = TerminateOnCollisionWrapper(env)
 
         return env
 
@@ -87,4 +87,4 @@ class NoCrash(Benchmark):
         return [StepsMetric(), CollisionsMetric(), LaneInvasionsMetric()]
 
 
-anyweather = NoCrash()
+anyweather = AnyWeather()
