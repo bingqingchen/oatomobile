@@ -32,10 +32,12 @@ from typing import Text
 
 from oatomobile.core.benchmark import Benchmark
 from oatomobile.core.rl import Metric
+from oatomobile.core.rl import ReturnsMetric
 from oatomobile.core.rl import SaveToDiskWrapper
 from oatomobile.core.rl import StepsMetric
 from oatomobile.envs.carla import CARLANavEnv
 from oatomobile.envs.carla import CollisionsMetric
+from oatomobile.envs.carla import DistanceMetric
 from oatomobile.envs.carla import LaneInvasionsMetric
 from oatomobile.envs.carla import TerminateOnCollisionWrapper
 
@@ -66,7 +68,7 @@ class NoCrash(Benchmark):
           A task from the benchmark with `task_id`.
         """
         # TODO(filangel): figure out the correct horizon.
-        env = super(NoCrash, self).load(task_id, max_episode_steps=1500, **kwargs)
+        env = super(NoCrash, self).load(task_id, max_episode_steps=2500, **kwargs)
 
         # Terminate on collision.
         env = TerminateOnCollisionWrapper(env)
@@ -84,7 +86,13 @@ class NoCrash(Benchmark):
     @property
     def metrics(self) -> Sequence[Metric]:
         """Returns the list of metrics associated with the benchmark."""
-        return [StepsMetric(), CollisionsMetric(), LaneInvasionsMetric()]
+        return [
+            StepsMetric(),
+            CollisionsMetric(),
+            LaneInvasionsMetric(),
+            DistanceMetric(),
+            ReturnsMetric(),
+        ]
 
 
 nocrash = NoCrash()
