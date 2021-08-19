@@ -69,7 +69,7 @@ class CORL2017(Benchmark):
           A task from the benchmark with `task_id`.
         """
         # TODO(filangel): figure out the correct horizon.
-        env = super(CORL2017, self).load(task_id, max_episode_steps=1500, **kwargs)
+        env = super(CORL2017, self).load(task_id, max_episode_steps=2500, **kwargs)
 
         # Terminate on collision. (Disable collision detection)
         # env = TerminateOnCollisionWrapper(env)

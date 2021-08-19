@@ -68,7 +68,7 @@ class NoCrash(Benchmark):
           A task from the benchmark with `task_id`.
         """
         # TODO(filangel): figure out the correct horizon.
-        env = super(NoCrash, self).load(task_id, max_episode_steps=1500, **kwargs)
+        env = super(NoCrash, self).load(task_id, max_episode_steps=2500, **kwargs)
 
         # Terminate on collision.
         env = TerminateOnCollisionWrapper(env)
