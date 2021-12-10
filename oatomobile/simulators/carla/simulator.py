@@ -21,6 +21,7 @@ import queue
 import random
 import signal
 import time
+import math
 from typing import Any
 from typing import Mapping
 from typing import Optional
@@ -39,6 +40,7 @@ from oatomobile.core.registry import registry
 from oatomobile.simulators.carla import defaults
 from oatomobile.utils import carla as cutil
 from oatomobile.utils import graphics as gutil
+from oatomobile.baselines.rulebased.autopilot.agent import AutopilotAgent
 
 # All agents are expected to return the same action type.
 CARLAAction = carla.VehicleControl  # pylint: disable=no-member
@@ -79,6 +81,7 @@ class CARLASensorTypes(simulator.SensorTypes):
   RIGHT_CAMERA_DEPTH = 29
   LEFT_CAMERA_DEPTH = 30
   REAR_CAMERA_DEPTH = 31 
+  HAZARD = 32
 
 class CameraSensor(simulator.Sensor, abc.ABC):
   """Abstract class for CARLA camera sensors."""
@@ -1846,6 +1849,116 @@ class GameStateSensor(simulator.Sensor):
     """Returns the default sensor."""
     return cls(hero=hero, config=defaults.GAME_STATE_CONFIG)
 
+@registry.register_sensor(name="distance_to_hazards")
+class HazardDistanceSensor(simulator.Sensor):
+  """Hazard sensor."""
+
+  def __init__(
+      self,
+      hero: carla.ActorBlueprint,  # pylint: disable=no-member
+      *args,
+      **kwargs) -> None:
+    """Constructs a goal sensor."""
+    super().__init__(*args, **kwargs)
+    self._hero = hero
+
+    # Stored predictions.
+    self._predictions = None
+
+  def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+    """Returns the universal unique identifier of the sensor."""
+    return "distance_to_hazards"
+
+  def _get_sensor_type(self, *args: Any, **kwargs: Any) -> CARLASensorTypes:
+    """Returns the the type of the sensor."""
+    return CARLASensorTypes.HAZARD
+
+  @property
+  def observation_space(self, *args: Any, **kwargs: Any) -> gym.spaces.Box:
+    """Returns the observation spec of the sensor."""
+    return gym.spaces.Box(
+        low=0,
+        high=np.inf,
+        shape=(1, ),
+        dtype=np.float32,
+    )
+
+  @property
+  def predictions(self) -> np.ndarray:
+    """Returns predictions from PREVIOUS timestep."""
+    return self._predictions
+
+  @predictions.setter
+  def predictions(self, value: np.ndarray) -> None:
+    """Records the predictions for the sensor."""
+    self._predictions = value
+
+  def get_observation(self, frame: int,
+                      **kwargs) -> Mapping[str, Mapping[str, np.ndarray]]:
+    """Finds the data point that matches the current `frame` id.
+
+    Args:
+      frame: The synchronous simulation time step ID.
+
+    Returns:
+      The ego-locations of the goal(s).
+    """
+    del frame  # Unused arg
+    carla_world = self._hero.get_world()
+    carla_map = carla_world.get_map()
+    # retrieve relevant elements for safe navigation, i.e.: traffic lights
+    # and other vehicles
+    actor_list = carla_world.get_actors()
+    vehicle_list = actor_list.filter("*vehicle*")
+    lights_list = actor_list.filter("*traffic_light*")
+    # check possible obstacles
+    ego_vehicle_location = self._hero.get_location()
+    ego_vehicle_waypoint = carla_map.get_waypoint(ego_vehicle_location)
+    # Set the maximum distance (15 meters)
+    distance_to_hazards = 15
+    for target_vehicle in vehicle_list:
+      # Do not account for the ego vehicle.
+      if target_vehicle.id == self.hero.id:
+        continue
+      # If the object is not in our lane it's not an obstacle.
+      target_vehicle_waypoint = carla_map.get_waypoint(
+          target_vehicle.get_location())
+      if target_vehicle_waypoint.road_id != ego_vehicle_waypoint.road_id or \
+              target_vehicle_waypoint.lane_id != ego_vehicle_waypoint.lane_id:
+        continue
+
+      loc = target_vehicle.get_location()
+      target_vector = np.array([loc.x - ego_vehicle_location.x, loc.y - ego_vehicle_location.y])
+      norm_target = np.linalg.norm(target_vector)
+      if norm_target < 0.001:
+        distance_to_hazards = min(distance_to_hazards, norm_target)
+        continue
+      # Do not consider objects more than 15 meters away
+      if norm_target > 15:
+        continue
+      # Only consider objects in front of the ego-vehicle
+      orientation = self._hero.get_transform().rotation.yaw
+      forward_vector = np.array(
+        [math.cos(math.radians(orientation)), math.sin(math.radians(orientation))])
+      d_angle = math.degrees(math.acos(np.dot(forward_vector, target_vector) / norm_target)) 
+      # Objects in front of ego-vehicle
+      if d_angle < 60:
+        distance_to_hazards = min(distance_to_hazards, norm_target)
+
+    return np.array(distance_to_hazards)
+
+  def close(self) -> None:
+    """Dummy call, to satisfy interface."""
+    pass
+
+  @classmethod
+  def default(
+      cls,
+      hero: carla.ActorBlueprint,  # pylint: disable=no-member
+      *args,
+      **kwargs) -> "PredictionsSensor":
+    """Returns the default sensor."""
+    return cls(hero=hero)
 
 @registry.register_simulator(name="carla")
 class CARLASimulator(simulator.Simulator):

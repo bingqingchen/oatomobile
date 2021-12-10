@@ -356,6 +356,7 @@ CARLA_SENSORS = (
     "lane_invasion",
     "is_at_traffic_light",
     "traffic_light_state",
+    "distance_to_hazards"
 )
 # The time interval before stopping the search for the carla server.
 CARLA_CLIENT_TIMEOUT = 20.0
