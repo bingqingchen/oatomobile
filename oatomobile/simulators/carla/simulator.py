@@ -1557,7 +1557,7 @@ class GoalSensor(simulator.Sensor):
     idx = np.argmin(distance)
     ## Make sure the idx is before the start
     #idx = max(0, idx-1)
-    print(idx, current_location)
+    # print(idx, current_location)
     #####################################################
     
     goals_local = cutil.world2local(
@@ -1863,6 +1863,7 @@ class HazardDistanceSensor(simulator.Sensor):
 
     # Stored predictions.
     self._predictions = None
+    self.threshold = 40
 
   def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
     """Returns the universal unique identifier of the sensor."""
@@ -1913,8 +1914,8 @@ class HazardDistanceSensor(simulator.Sensor):
     # check possible obstacles
     ego_vehicle_location = self._hero.get_location()
     ego_vehicle_waypoint = carla_map.get_waypoint(ego_vehicle_location)
-    # Set the maximum distance (10 meters)
-    distance_to_hazards = 10
+    # Set the maximum distance (20 meters)
+    distance_to_hazards = self.threshold
     for target_vehicle in vehicle_list:
       # Do not account for the ego vehicle.
       if target_vehicle.id == self._hero.id:
@@ -1932,8 +1933,8 @@ class HazardDistanceSensor(simulator.Sensor):
       if norm_target < 0.001:
         distance_to_hazards = min(distance_to_hazards, norm_target)
         continue
-      # Do not consider objects more than 10 meters away
-      if norm_target > 10:
+      # Do not consider objects more than 20 meters away
+      if norm_target > self.threshold:
         continue
       # Only consider objects in front of the ego-vehicle
       orientation = self._hero.get_transform().rotation.yaw

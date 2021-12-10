@@ -159,7 +159,7 @@ class AutopilotAgent(oatomobile.Agent):
     else:
       # standard local planner behavior
       control = self._local_planner.run_step(debug=debug)
-
+    # print(control)
     return control
 
   def _set_destination(
