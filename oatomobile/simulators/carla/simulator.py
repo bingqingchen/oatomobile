@@ -40,7 +40,6 @@ from oatomobile.core.registry import registry
 from oatomobile.simulators.carla import defaults
 from oatomobile.utils import carla as cutil
 from oatomobile.utils import graphics as gutil
-from oatomobile.baselines.rulebased.autopilot.agent import AutopilotAgent
 
 # All agents are expected to return the same action type.
 CARLAAction = carla.VehicleControl  # pylint: disable=no-member
@@ -1914,11 +1913,11 @@ class HazardDistanceSensor(simulator.Sensor):
     # check possible obstacles
     ego_vehicle_location = self._hero.get_location()
     ego_vehicle_waypoint = carla_map.get_waypoint(ego_vehicle_location)
-    # Set the maximum distance (15 meters)
-    distance_to_hazards = 15
+    # Set the maximum distance (10 meters)
+    distance_to_hazards = 10
     for target_vehicle in vehicle_list:
       # Do not account for the ego vehicle.
-      if target_vehicle.id == self.hero.id:
+      if target_vehicle.id == self._hero.id:
         continue
       # If the object is not in our lane it's not an obstacle.
       target_vehicle_waypoint = carla_map.get_waypoint(
@@ -1933,8 +1932,8 @@ class HazardDistanceSensor(simulator.Sensor):
       if norm_target < 0.001:
         distance_to_hazards = min(distance_to_hazards, norm_target)
         continue
-      # Do not consider objects more than 15 meters away
-      if norm_target > 15:
+      # Do not consider objects more than 10 meters away
+      if norm_target > 10:
         continue
       # Only consider objects in front of the ego-vehicle
       orientation = self._hero.get_transform().rotation.yaw

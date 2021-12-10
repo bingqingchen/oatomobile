@@ -142,13 +142,13 @@ class AutopilotAgent(oatomobile.Agent):
 
       hazard_detected = True
 
-    # check for the state of the traffic lights
-    light_state, traffic_light = self._is_light_red(lights_list)
-    if light_state:
-      if debug:
-        logging.debug('=== RED LIGHT AHEAD [{}])'.format(traffic_light.id))
+    # Do not check for the state of the traffic lights
+    # light_state, traffic_light = self._is_light_red(lights_list)
+    # if light_state:
+    #   if debug:
+    #     logging.debug('=== RED LIGHT AHEAD [{}])'.format(traffic_light.id))
 
-      hazard_detected = True
+    #   hazard_detected = True
 
     if hazard_detected:
       control = carla.VehicleControl()  # pylint: disable=no-member
